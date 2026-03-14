@@ -292,7 +292,7 @@ export default function Home() {
             </div>
             <span className="syne-font" style={{ fontWeight: 800, fontSize: 20, letterSpacing: -0.5, color: 'var(--text)' }}>Squad</span>
           </div>
-          
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button className="theme-toggle" onClick={toggleTheme}>
               {theme === 'dark' ? '☀️' : '🌙'}
@@ -370,12 +370,18 @@ export default function Home() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button className={`filter-chip ${showFemaleOnly ? 'active' : ''}`} onClick={() => setShowFemaleOnly(!showFemaleOnly)}>
-                    👩‍🦰 Female Only
-                </button>
-                <button className={`filter-chip ${showVerifiedOnly ? 'active' : ''}`} onClick={() => setShowVerifiedOnly(!showVerifiedOnly)}>
-                    ✅ Verified Only
-                </button>
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <button className={`filter-chip ${showFemaleOnly ? 'active' : ''}`} onClick={() => setShowFemaleOnly(!showFemaleOnly)}>
+                      👩‍🦰 Female Only
+                  </button>
+                  <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>Spaces for women</div>
+                </div>
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <button className={`filter-chip ${showVerifiedOnly ? 'active' : ''}`} onClick={() => setShowVerifiedOnly(!showVerifiedOnly)}>
+                      ✅ Verified Only
+                  </button>
+                  <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>ID verified hosts only</div>
+                </div>
             </div>
 
             <button 
