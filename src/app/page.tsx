@@ -25,18 +25,19 @@ const cities = [
 ] as const
 
 const mockSquads = [
-  { id: 1, activity: '⚽', name: 'Sunday Morning Football', location: 'Versova Beach', time: 'Sun 7:00 AM', members: 6, max: 10, city: 'mumbai' },
-  { id: 2, activity: '🏋️', name: 'Morning Gym Crew', location: 'Andheri West', time: 'Daily 6:30 AM', members: 3, max: 5, city: 'mumbai' },
-  { id: 3, activity: '🏏', name: 'Cricket on Weekends', location: 'Juhu', time: 'Sat 6:00 AM', members: 8, max: 11, city: 'mumbai' },
-  { id: 4, activity: '☕', name: 'Tech Bro Meetup', location: 'Banjara Hills', time: 'Sat 5:00 PM', members: 4, max: 8, city: 'hyderabad' },
-  { id: 5, activity: '🏸', name: 'Badminton Doubles', location: 'Jubilee Hills', time: 'Sun 6:00 AM', members: 2, max: 4, city: 'hyderabad' },
-  { id: 6, activity: '🥾', name: 'Oak Mountain Hike', location: 'Birmingham', time: 'Sat 8:00 AM', members: 4, max: 8, city: 'alabama' },
-  { id: 7, activity: '🏈', name: 'Flag Football', location: 'Tuscaloosa', time: 'Sun 4:00 PM', members: 10, max: 14, city: 'alabama' },
-  { id: 8, activity: '🏄', name: 'Morning Surf', location: 'Folly Beach', time: 'Sat 6:30 AM', members: 3, max: 6, city: 'south_carolina' },
-  { id: 9, activity: '🎲', name: 'Board Game Night', location: 'Charleston', time: 'Fri 7:00 PM', members: 5, max: 6, city: 'south_carolina' },
+  { id: 1, activity: '⚽', name: 'Sunday Morning Football', location: 'Versova Beach', time: 'Sun 7:00 AM', members: 6, max: 10, city: 'mumbai', femaleOnly: false, verifiedOnly: true },
+  { id: 2, activity: '🏋️', name: 'Morning Gym Crew', location: 'Andheri West', time: 'Daily 6:30 AM', members: 3, max: 5, city: 'mumbai', femaleOnly: true, verifiedOnly: false },
+  { id: 3, activity: '🏏', name: 'Cricket on Weekends', location: 'Juhu', time: 'Sat 6:00 AM', members: 8, max: 11, city: 'mumbai', femaleOnly: false, verifiedOnly: false },
+  { id: 4, activity: '☕', name: 'Tech Bro Meetup', location: 'Banjara Hills', time: 'Sat 5:00 PM', members: 4, max: 8, city: 'hyderabad', femaleOnly: false, verifiedOnly: true },
+  { id: 5, activity: '🏸', name: 'Badminton Doubles', location: 'Jubilee Hills', time: 'Sun 6:00 AM', members: 2, max: 4, city: 'hyderabad', femaleOnly: true, verifiedOnly: true },
+  { id: 6, activity: '🥾', name: 'Oak Mountain Hike', location: 'Birmingham', time: 'Sat 8:00 AM', members: 4, max: 8, city: 'alabama', femaleOnly: false, verifiedOnly: false },
+  { id: 7, activity: '🏈', name: 'Flag Football', location: 'Tuscaloosa', time: 'Sun 4:00 PM', members: 10, max: 14, city: 'alabama', femaleOnly: false, verifiedOnly: true },
+  { id: 8, activity: '🏄', name: 'Morning Surf', location: 'Folly Beach', time: 'Sat 6:30 AM', members: 3, max: 6, city: 'south_carolina', femaleOnly: false, verifiedOnly: false },
+  { id: 9, activity: '🎲', name: 'Board Game Night', location: 'Charleston', time: 'Fri 7:00 PM', members: 5, max: 6, city: 'south_carolina', femaleOnly: true, verifiedOnly: false },
 ]
 
 export default function Home() {
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [city, setCity] = useState<City>('mumbai')
   const [email, setEmail] = useState('')
   const [interest, setInterest] = useState('')
@@ -47,6 +48,10 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [selectedSquad, setSelectedSquad] = useState<typeof mockSquads[0] | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  
+  // Safety Filters
+  const [showFemaleOnly, setShowFemaleOnly] = useState(false)
+  const [showVerifiedOnly, setShowVerifiedOnly] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,6 +65,10 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    document.documentElement.className = theme;
+  }, [theme])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -78,27 +87,64 @@ export default function Home() {
     setSubmitting(false)
   }
 
-  const filteredSquads = mockSquads.filter(s => s.city === city)
+  const filteredSquads = mockSquads.filter(s => {
+    const cityMatch = s.city === city;
+    const femaleMatch = !showFemaleOnly || s.femaleOnly;
+    const verifiedMatch = !showVerifiedOnly || s.verifiedOnly;
+    return cityMatch && femaleMatch && verifiedMatch;
+  })
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark')
 
   return (
-    <main style={{ minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
+    <main style={{ 
+      minHeight: '100vh', 
+      position: 'relative', 
+      overflowX: 'hidden',
+      transition: 'background-color 0.5s ease, color 0.5s ease' 
+    }} className={theme}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
 
       <style>{`
+        :root {
+            --bg: #ffffff;
+            --text: #0a0a0a;
+            --glass-bg: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --card-hover: rgba(0, 0, 0, 0.05);
+            --accent: #ff4d00;
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --input-bg: rgba(0, 0, 0, 0.03);
+            --badge-female: #f472b6;
+            --badge-verified: #3b82f6;
+        }
+
+        .dark {
+            --bg: #030303;
+            --text: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(255, 255, 255, 0.04);
+            --accent: #ff4d00;
+            --nav-bg: rgba(3, 3, 3, 0.8);
+            --input-bg: rgba(255, 255, 255, 0.03);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::selection { background: #ff4d00; color: #fff; }
+        ::selection { background: var(--accent); color: #fff; }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 2px solid #050505; }
-        ::-webkit-scrollbar-thumb:hover { background: #ff4d00; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 2px solid var(--bg); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         html, body {
-            background: #030303;
-            color: #ffffff;
+            background: var(--bg);
+            color: var(--text);
             font-family: 'DM Sans', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
             width: 100%;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         @keyframes slideUpFade {
@@ -123,21 +169,22 @@ export default function Home() {
         .delay-3 { animation-delay: 0.3s; }
 
         .glass-nav {
-            background: rgba(3, 3, 3, 0.8);
+            background: var(--nav-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--glass-border);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-card:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--card-hover);
             border-color: rgba(255, 77, 0, 0.3);
             transform: translateY(-4px);
         }
@@ -170,14 +217,57 @@ export default function Home() {
             animation: fadeIn 0.3s ease;
         }
         .modal-content {
-            background: #0a0a0a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg);
+            border: 1px solid var(--glass-border);
             border-radius: 28px;
             width: 100%;
             max-width: 440px;
             padding: 32px;
             position: relative;
             animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .theme-toggle:hover { background: var(--card-hover); }
+
+        .safety-badge {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+        .female-only { background: var(--badge-female); color: #fff; }
+        .verified-only { background: var(--badge-verified); color: #fff; }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .filter-chip.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
         }
 
         @media (max-width: 768px) {
@@ -187,9 +277,6 @@ export default function Home() {
             .grid-2 { display: flex !important; flex-direction: column !important; gap: 12px !important; width: 100% !important; }
             .hero-pad { padding-top: 100px !important; padding-bottom: 40px !important; }
             .compact-step-card { padding: 16px 20px !important; }
-            .compact-step-icon { font-size: 28px !important; }
-            .compact-step-title { font-size: 17px !important; }
-            .compact-step-desc { font-size: 13px !important; }
         }
       `}</style>
 
@@ -198,24 +285,30 @@ export default function Home() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 32, height: 32, background: '#ff4d00', borderRadius: 8,
+              width: 32, height: 32, background: 'var(--accent)', borderRadius: 8,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <span className="syne-font" style={{ fontWeight: 800, fontSize: 16, color: '#fff' }}>S</span>
             </div>
-            <span className="syne-font" style={{ fontWeight: 800, fontSize: 20, letterSpacing: -0.5 }}>Squad</span>
+            <span className="syne-font" style={{ fontWeight: 800, fontSize: 20, letterSpacing: -0.5, color: 'var(--text)' }}>Squad</span>
           </div>
-          <a href="#waitlist" className="btn-primary" style={{ padding: '7px 16px', borderRadius: 100, fontSize: 12, textDecoration: 'none' }}>Join Beta</a>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="theme-toggle" onClick={toggleTheme}>
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+            <a href="#waitlist" className="btn-primary" style={{ padding: '7px 16px', borderRadius: 100, fontSize: 12, textDecoration: 'none' }}>Join Beta</a>
+          </div>
         </div>
       </nav>
 
       {/* Hero */}
       <section className="hero-pad" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '120px 20px 40px', textAlign: 'center' }}>
-        <h1 className="animate-up delay-1 h1-title syne-font" style={{ fontWeight: 800, fontSize: 80, lineHeight: 1.05, letterSpacing: -2.5, marginBottom: 20, maxWidth: 900 }}>
+        <h1 className="animate-up delay-1 h1-title syne-font" style={{ fontWeight: 800, fontSize: 80, lineHeight: 1.05, letterSpacing: -2.5, marginBottom: 20, maxWidth: 900, color: 'var(--text)' }}>
           Stop texting dead<br />WhatsApp groups.<br />
-          <span style={{ color: '#ff4d00' }}>Find your squad.</span>
+          <span style={{ color: 'var(--accent)' }}>Find your squad.</span>
         </h1>
-        <p className="animate-up delay-2" style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', maxWidth: 600, lineHeight: 1.6, marginBottom: 32 }}>
+        <p className="animate-up delay-2" style={{ fontSize: 18, color: 'var(--text)', opacity: 0.6, maxWidth: 600, lineHeight: 1.6, marginBottom: 32 }}>
           New to a city or just want people to do things with? Squad connects you with real people around you instantly. No awkward DMs, just show up.
         </p>
         <div className="animate-up delay-3">
@@ -223,11 +316,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Three taps section - Ultra-compact for phone view */}
+      {/* Three taps section */}
       <section id="how" style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#ff4d00', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Three taps to your squad</div>
-          <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 40, letterSpacing: -1.2, marginBottom: 16 }}>No scrolling needed</h2>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Three taps to your squad</div>
+          <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 40, letterSpacing: -1.2, marginBottom: 16, color: 'var(--text)' }}>No scrolling needed</h2>
         </div>
 
         <div className="grid-3">
@@ -238,10 +331,10 @@ export default function Home() {
           ].map((item) => (
             <div key={item.step} className="glass-card compact-step-card" style={{ borderRadius: 20, padding: 24 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div className="compact-step-icon" style={{ fontSize: 32 }}>{item.emoji}</div>
+                <div style={{ fontSize: 32 }}>{item.emoji}</div>
                 <div style={{ textAlign: 'left' }}>
-                  <h3 className="syne-font compact-step-title" style={{ fontWeight: 700, fontSize: 19, marginBottom: 2 }}>{item.title}</h3>
-                  <p className="compact-step-desc" style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, lineHeight: 1.3 }}>{item.desc}</p>
+                  <h3 className="syne-font" style={{ fontWeight: 700, fontSize: 19, marginBottom: 2, color: 'var(--text)' }}>{item.title}</h3>
+                  <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14, lineHeight: 1.3 }}>{item.desc}</p>
                 </div>
               </div>
             </div>
@@ -249,21 +342,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Live squads section */}
-      <section style={{ background: 'rgba(255,255,255,0.01)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '60px 20px' }}>
+      {/* Live squads section with filters */}
+      <section style={{ 
+          background: theme === 'dark' ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)', 
+          borderTop: '1px solid var(--glass-border)', 
+          borderBottom: '1px solid var(--glass-border)', 
+          padding: '60px 20px' 
+      }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, marginBottom: 32 }}>
-            <h2 className="syne-font h2-title text-center" style={{ fontWeight: 800, fontSize: 36, letterSpacing: -1 }}>Happening near you</h2>
-
-            <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.05)', padding: 5, borderRadius: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <h2 className="syne-font h2-title text-center" style={{ fontWeight: 800, fontSize: 36, letterSpacing: -1, color: 'var(--text)' }}>Happening near you</h2>
+            
+            <div style={{ display: 'flex', gap: 6, background: 'var(--glass-bg)', padding: 5, borderRadius: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
               {cities.map(c => (
                 <button
                   key={c.id}
                   onClick={() => setCity(c.id as City)}
                   style={{
                     padding: '8px 16px', borderRadius: 100, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-                    background: city === c.id ? '#ff4d00' : 'transparent',
-                    color: city === c.id ? '#fff' : 'rgba(255,255,255,0.4)', transition: '0.2s'
+                    background: city === c.id ? 'var(--accent)' : 'transparent',
+                    color: city === c.id ? '#fff' : 'var(--text)', opacity: city === c.id ? 1 : 0.5, transition: '0.2s'
                   }}
                 >
                   {c.label}
@@ -271,10 +369,19 @@ export default function Home() {
               ))}
             </div>
 
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="btn-primary"
-              style={{ padding: '12px 28px', borderRadius: 100, fontSize: 14 }}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button className={`filter-chip ${showFemaleOnly ? 'active' : ''}`} onClick={() => setShowFemaleOnly(!showFemaleOnly)}>
+                    👩‍🦰 Female Only
+                </button>
+                <button className={`filter-chip ${showVerifiedOnly ? 'active' : ''}`} onClick={() => setShowVerifiedOnly(!showVerifiedOnly)}>
+                    ✅ Verified Only
+                </button>
+            </div>
+
+            <button 
+                onClick={() => setShowAddModal(true)}
+                className="btn-primary" 
+                style={{ padding: '12px 28px', borderRadius: 100, fontSize: 14 }}
             >
               + Create a Squad
             </button>
@@ -282,22 +389,33 @@ export default function Home() {
 
           <div className="grid-2">
             {filteredSquads.map((squad) => (
-              <div key={squad.id} className="glass-card" style={{ borderRadius: 18, padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ fontSize: 24, width: 48, height: 48, background: 'rgba(255,255,255,0.05)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div key={squad.id} className="glass-card" style={{ borderRadius: 18, padding: 16, display: 'flex', alignItems: 'center', gap: 16, position: 'relative' }}>
+                <div style={{ fontSize: 24, width: 48, height: 48, background: 'var(--glass-bg)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   {squad.activity}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{squad.name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{squad.time} · {squad.location}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{squad.name}</div>
+                  </div>
+                  <div style={{ color: 'var(--text)', opacity: 0.5, fontSize: 12 }}>{squad.time} · {squad.location}</div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                    {squad.femaleOnly && <span className="safety-badge female-only">Female Only</span>}
+                    {squad.verifiedOnly && <span className="safety-badge verified-only">Verified</span>}
+                  </div>
                 </div>
-                <button
-                  onClick={() => setSelectedSquad(squad)}
-                  style={{ background: '#ff4d00', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                <button 
+                    onClick={() => setSelectedSquad(squad)}
+                    style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
-                  Join
+                    Join
                 </button>
               </div>
             ))}
+            {filteredSquads.length === 0 && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text)', opacity: 0.5 }}>
+                    No squads match these filters in {city}. Try hosting one!
+                </div>
+            )}
           </div>
         </div>
       </section>
@@ -308,24 +426,21 @@ export default function Home() {
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>{selectedSquad.activity}</div>
-              <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>{selectedSquad.name}</h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 24 }}>{selectedSquad.location}</p>
+              <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>{selectedSquad.name}</h2>
+              <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14, marginBottom: 24 }}>{selectedSquad.location}</p>
+              
+              <div style={{ display: 'grid', gap: 10, marginBottom: 24 }}>
+                 {selectedSquad.femaleOnly && <div style={{ background: '#fdf2f8', color: '#be185d', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>This is a Female-Only squad 👩‍🦰</div>}
+                 {selectedSquad.verifiedOnly && <div style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>Verified Profiles Only ✅</div>}
+              </div>
 
               <div style={{ display: 'grid', gap: 12, width: '100%' }}>
                 <a href="#waitlist" onClick={() => setSelectedSquad(null)} className="btn-primary" style={{ display: 'block', padding: '16px', borderRadius: 14, textDecoration: 'none', fontSize: 15 }}>
-                  Join waitlist to enter squad
+                  Apply to join waitlist
                 </a>
-
-                <button
-                  onClick={() => { setSelectedSquad(null); setShowAddModal(true); }}
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '16px', borderRadius: 14, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Or host your own squad +
-                </button>
-
-                <button
-                  onClick={() => setSelectedSquad(null)}
-                  style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', marginTop: 8, cursor: 'pointer', fontSize: 13 }}
+                <button 
+                  onClick={() => setSelectedSquad(null)} 
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text)', opacity: 0.5, marginTop: 8, cursor: 'pointer', fontSize: 13 }}
                 >
                   Dismiss
                 </button>
@@ -335,26 +450,34 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal - Create Squad */}
+      {/* Modal - Host a Squad */}
       {showAddModal && (
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 56, marginBottom: 16 }}>✨</div>
-              <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Host a Squad</h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 24 }}>Want to lead an activity in {city}?</p>
-
-              <div style={{ display: 'grid', gap: 12, marginBottom: 24 }}>
-                <input placeholder="Activity (e.g. Hiking)" style={{ padding: '14px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', width: '100%' }} />
-                <input placeholder="Preferred Area" style={{ padding: '14px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', width: '100%' }} />
+              <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>Host a Squad</h2>
+              <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14, marginBottom: 24 }}>Set your preferences for the squad.</p>
+              
+              <div style={{ display: 'grid', gap: 12, marginBottom: 24, textAlign: 'left' }}>
+                <input placeholder="Activity (e.g. Hiking)" style={{ padding: '14px', borderRadius: 12, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', width: '100%' }} />
+                
+                <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
+                        <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-female)' }} /> Female Only
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
+                        <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-verified)' }} /> Verified Only
+                    </label>
+                </div>
               </div>
 
               <a href="#waitlist" onClick={() => setShowAddModal(false)} className="btn-primary" style={{ display: 'block', padding: '16px', borderRadius: 14, textDecoration: 'none', fontSize: 15 }}>
-                Join waitlist to host
+                Reserve your spot to host
               </a>
-              <button
-                onClick={() => setShowAddModal(false)}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', marginTop: 12, cursor: 'pointer', fontSize: 13 }}
+              <button 
+                onClick={() => setShowAddModal(false)} 
+                style={{ background: 'transparent', border: 'none', color: 'var(--text)', opacity: 0.5, marginTop: 12, cursor: 'pointer', fontSize: 13 }}
               >
                 Cancel
               </button>
@@ -363,53 +486,53 @@ export default function Home() {
         </div>
       )}
 
-      {/* Waitlist Section - Enhanced Data Collection */}
+      {/* Waitlist Section */}
       <section id="waitlist" style={{ padding: '80px 20px', position: 'relative' }}>
         <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 20 }}>🚀</div>
-          <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 48, letterSpacing: -1.5, marginBottom: 16 }}>The Waitlist</h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 18, marginBottom: 40, lineHeight: 1.6 }}>Step 1 is simple: we're collecting emails. We launch officially when we hit 1,000 members in your city.</p>
+          <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 48, letterSpacing: -1.5, marginBottom: 16, color: 'var(--text)' }}>The Waitlist</h2>
+          <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 18, marginBottom: 40, lineHeight: 1.6 }}>Step 1 is simple: we're collecting emails. We launch officially when we hit 1,000 members in your city.</p>
 
           {submitted ? (
             <div className="glass-card" style={{ padding: '40px', borderRadius: 32 }}>
-              <h3 className="syne-font" style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>You're on the list!</h3>
-              <p style={{ color: 'rgba(255,255,255,0.5)' }}>We'll notify you as soon as squads are ready in {city}.</p>
+              <h3 className="syne-font" style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>You're on the list!</h3>
+              <p style={{ color: 'var(--text)', opacity: 0.5 }}>We'll notify you as soon as squads are ready in {city}.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, textAlign: 'left' }}>
               <div style={{ display: 'grid', gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#ff4d00', textTransform: 'uppercase', letterSpacing: 1 }}>Your Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="name@email.com"
-                  required
-                  style={{ padding: '16px 20px', borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16 }}
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Your Email</label>
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="name@email.com" 
+                  required 
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }} 
                 />
               </div>
 
               <div style={{ display: 'grid', gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#ff4d00', textTransform: 'uppercase', letterSpacing: 1 }}>What do you want to do most?</label>
-                <select
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Primary Interest</label>
+                <select 
                   value={interest}
                   onChange={e => setInterest(e.target.value)}
-                  style={{ padding: '16px 20px', borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16, appearance: 'none' }}
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16, appearance: 'none' }}
                 >
-                  <option value="" disabled style={{ background: '#000' }}>Pick an activity</option>
-                  {activities.map(a => <option key={a.name} value={a.name} style={{ background: '#000' }}>{a.emoji} {a.name}</option>)}
-                  <option value="Other" style={{ background: '#000' }}>Other...</option>
+                  <option value="" disabled style={{ background: theme === 'dark' ? '#000' : '#fff' }}>Pick an activity</option>
+                  {activities.map(a => <option key={a.name} value={a.name} style={{ background: theme === 'dark' ? '#000' : '#fff' }}>{a.emoji} {a.name}</option>)}
+                  <option value="Other" style={{ background: theme === 'dark' ? '#000' : '#fff' }}>Other...</option>
                 </select>
               </div>
 
               <div style={{ display: 'grid', gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 700, color: '#ff4d00', textTransform: 'uppercase', letterSpacing: 1 }}>Which area do you live in?</label>
-                <input
-                  type="text"
-                  value={neighborhood}
-                  onChange={e => setNeighborhood(e.target.value)}
-                  placeholder="e.g. Bandra, South Perth, Chelsea"
-                  style={{ padding: '16px 20px', borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16 }}
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Which area do you live in?</label>
+                <input 
+                  type="text" 
+                  value={neighborhood} 
+                  onChange={e => setNeighborhood(e.target.value)} 
+                  placeholder="e.g. Bandra, South Perth" 
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }} 
                 />
               </div>
 
@@ -422,8 +545,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '40px 24px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>© 2026 Squad · Reconnecting the real world.</p>
+      <footer style={{ padding: '40px 24px', textAlign: 'center', borderTop: '1px solid var(--glass-border)' }}>
+        <p style={{ color: 'var(--text)', opacity: 0.3, fontSize: 14 }}>© 2026 Squad · Reconnecting the real world.</p>
       </footer>
     </main>
   )
