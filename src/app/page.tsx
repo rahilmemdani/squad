@@ -48,7 +48,7 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [selectedSquad, setSelectedSquad] = useState<typeof mockSquads[0] | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
-  
+
   // Safety Filters
   const [showFemaleOnly, setShowFemaleOnly] = useState(false)
   const [showVerifiedOnly, setShowVerifiedOnly] = useState(false)
@@ -97,11 +97,11 @@ export default function Home() {
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark')
 
   return (
-    <main style={{ 
-      minHeight: '100vh', 
-      position: 'relative', 
+    <main style={{
+      minHeight: '100vh',
+      position: 'relative',
       overflowX: 'hidden',
-      transition: 'background-color 0.5s ease, color 0.5s ease' 
+      transition: 'background-color 0.5s ease, color 0.5s ease'
     }} className={theme}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
 
@@ -117,6 +117,7 @@ export default function Home() {
             --input-bg: rgba(0, 0, 0, 0.03);
             --badge-female: #f472b6;
             --badge-verified: #3b82f6;
+            --badge-venue: #10b981;
         }
 
         .dark {
@@ -128,6 +129,7 @@ export default function Home() {
             --accent: #ff4d00;
             --nav-bg: rgba(3, 3, 3, 0.8);
             --input-bg: rgba(255, 255, 255, 0.03);
+            --filter-active-text: #ffffff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -252,6 +254,7 @@ export default function Home() {
         }
         .female-only { background: var(--badge-female); color: #fff; }
         .verified-only { background: var(--badge-verified); color: #fff; }
+        .verified-venue { background: var(--badge-venue); color: #fff; }
 
         .filter-chip {
             padding: 8px 16px;
@@ -343,16 +346,16 @@ export default function Home() {
       </section>
 
       {/* Live squads section with filters */}
-      <section style={{ 
-          background: theme === 'dark' ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)', 
-          borderTop: '1px solid var(--glass-border)', 
-          borderBottom: '1px solid var(--glass-border)', 
-          padding: '60px 20px' 
+      <section style={{
+        background: theme === 'dark' ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)',
+        borderTop: '1px solid var(--glass-border)',
+        borderBottom: '1px solid var(--glass-border)',
+        padding: '60px 20px'
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, marginBottom: 32 }}>
             <h2 className="syne-font h2-title text-center" style={{ fontWeight: 800, fontSize: 36, letterSpacing: -1, color: 'var(--text)' }}>Happening near you</h2>
-            
+
             <div style={{ display: 'flex', gap: 6, background: 'var(--glass-bg)', padding: 5, borderRadius: 100, flexWrap: 'wrap', justifyContent: 'center' }}>
               {cities.map(c => (
                 <button
@@ -370,24 +373,24 @@ export default function Home() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <button className={`filter-chip ${showFemaleOnly ? 'active' : ''}`} onClick={() => setShowFemaleOnly(!showFemaleOnly)}>
-                      👩‍🦰 Female Only
-                  </button>
-                  <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>Spaces for women</div>
-                </div>
-                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <button className={`filter-chip ${showVerifiedOnly ? 'active' : ''}`} onClick={() => setShowVerifiedOnly(!showVerifiedOnly)}>
-                      ✅ Verified Only
-                  </button>
-                  <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>ID verified hosts only</div>
-                </div>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <button className={`filter-chip ${showFemaleOnly ? 'active' : ''}`} onClick={() => setShowFemaleOnly(!showFemaleOnly)}>
+                  👩‍🦰 Female Only
+                </button>
+                <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>Spaces for women</div>
+              </div>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <button className={`filter-chip ${showVerifiedOnly ? 'active' : ''}`} onClick={() => setShowVerifiedOnly(!showVerifiedOnly)}>
+                  ✅ Verified Only
+                </button>
+                <div style={{ fontSize: 10, color: 'var(--text)', opacity: 0.4, marginTop: 4 }}>ID verified hosts only</div>
+              </div>
             </div>
 
-            <button 
-                onClick={() => setShowAddModal(true)}
-                className="btn-primary" 
-                style={{ padding: '12px 28px', borderRadius: 100, fontSize: 14 }}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="btn-primary"
+              style={{ padding: '12px 28px', borderRadius: 100, fontSize: 14 }}
             >
               + Create a Squad
             </button>
@@ -409,18 +412,18 @@ export default function Home() {
                     {squad.verifiedOnly && <span className="safety-badge verified-only">Verified</span>}
                   </div>
                 </div>
-                <button 
-                    onClick={() => setSelectedSquad(squad)}
-                    style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                <button
+                  onClick={() => setSelectedSquad(squad)}
+                  style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
-                    Join
+                  Join
                 </button>
               </div>
             ))}
             {filteredSquads.length === 0 && (
-                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text)', opacity: 0.5 }}>
-                    No squads match these filters in {city}. Try hosting one!
-                </div>
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text)', opacity: 0.5 }}>
+                No squads match these filters in {city}. Try hosting one!
+              </div>
             )}
           </div>
         </div>
@@ -434,18 +437,18 @@ export default function Home() {
               <div style={{ fontSize: 56, marginBottom: 16 }}>{selectedSquad.activity}</div>
               <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>{selectedSquad.name}</h2>
               <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14, marginBottom: 24 }}>{selectedSquad.location}</p>
-              
+
               <div style={{ display: 'grid', gap: 10, marginBottom: 24 }}>
-                 {selectedSquad.femaleOnly && <div style={{ background: '#fdf2f8', color: '#be185d', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>This is a Female-Only squad 👩‍🦰</div>}
-                 {selectedSquad.verifiedOnly && <div style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>Verified Profiles Only ✅</div>}
+                {selectedSquad.femaleOnly && <div style={{ background: '#fdf2f8', color: '#be185d', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>This is a Female-Only squad 👩‍🦰</div>}
+                {selectedSquad.verifiedOnly && <div style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px', borderRadius: 12, fontSize: 13, fontWeight: 600 }}>Verified Profiles Only ✅</div>}
               </div>
 
               <div style={{ display: 'grid', gap: 12, width: '100%' }}>
                 <a href="#waitlist" onClick={() => setSelectedSquad(null)} className="btn-primary" style={{ display: 'block', padding: '16px', borderRadius: 14, textDecoration: 'none', fontSize: 15 }}>
                   Apply to join waitlist
                 </a>
-                <button 
-                  onClick={() => setSelectedSquad(null)} 
+                <button
+                  onClick={() => setSelectedSquad(null)}
                   style={{ background: 'transparent', border: 'none', color: 'var(--text)', opacity: 0.5, marginTop: 8, cursor: 'pointer', fontSize: 13 }}
                 >
                   Dismiss
@@ -464,25 +467,25 @@ export default function Home() {
               <div style={{ fontSize: 56, marginBottom: 16 }}>✨</div>
               <h2 className="syne-font" style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>Host a Squad</h2>
               <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14, marginBottom: 24 }}>Set your preferences for the squad.</p>
-              
+
               <div style={{ display: 'grid', gap: 12, marginBottom: 24, textAlign: 'left' }}>
                 <input placeholder="Activity (e.g. Hiking)" style={{ padding: '14px', borderRadius: 12, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', width: '100%' }} />
-                
+
                 <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
-                        <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-female)' }} /> Female Only
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
-                        <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-verified)' }} /> Verified Only
-                    </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
+                    <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-female)' }} /> Female Only
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text)', cursor: 'pointer' }}>
+                    <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--badge-verified)' }} /> Verified Only
+                  </label>
                 </div>
               </div>
 
               <a href="#waitlist" onClick={() => setShowAddModal(false)} className="btn-primary" style={{ display: 'block', padding: '16px', borderRadius: 14, textDecoration: 'none', fontSize: 15 }}>
                 Reserve your spot to host
               </a>
-              <button 
-                onClick={() => setShowAddModal(false)} 
+              <button
+                onClick={() => setShowAddModal(false)}
                 style={{ background: 'transparent', border: 'none', color: 'var(--text)', opacity: 0.5, marginTop: 12, cursor: 'pointer', fontSize: 13 }}
               >
                 Cancel
@@ -491,6 +494,75 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Made for venues too */}
+      <section style={{ padding: '100px 20px', borderBottom: '1px solid var(--glass-border)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '60px', alignItems: 'center' }} className="grid-2">
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Partner with Squad</div>
+            <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 44, letterSpacing: -1.5, marginBottom: 20, color: 'var(--text)' }}>Own a venue?<br />Run your own squad.</h2>
+            <p style={{ color: 'var(--text)', opacity: 0.6, fontSize: 18, lineHeight: 1.6, marginBottom: 32 }}>
+              Create recurring squads, fill your slots every week, build a loyal community, all from your Squad venue profile.
+            </p>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 40 }}>
+              {["Fill empty slots", "Build regulars", "Zero commission"].map(pill => (
+                <div key={pill} style={{ padding: '8px 16px', borderRadius: 100, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                  {pill}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a href="#waitlist" className="btn-primary" style={{ padding: '16px 36px', borderRadius: 100, fontSize: 16, textDecoration: 'none', display: 'inline-block', width: 'fit-content' }}>
+                List your venue free →
+              </a>
+              <p style={{ fontSize: 13, color: 'var(--text)', opacity: 0.4 }}>Free to list. Promoted spots from ₹3,000/month</p>
+            </div>
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            {/* Mock Venue Card */}
+            <div className="glass-card" style={{ borderRadius: 32, padding: '32px', position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24 }}>
+                <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#fff', fontWeight: 800 }}>
+                  K
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <h3 className="syne-font" style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)' }}>Koramangala FC</h3>
+                    <span className="safety-badge verified-venue">Verified Venue</span>
+                  </div>
+                  <div style={{ color: 'var(--text)', opacity: 0.5, fontSize: 14 }}>Bengaluru, India</div>
+                </div>
+              </div>
+
+              <div style={{ background: 'var(--glass-bg)', borderRadius: 24, padding: '24px', marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--text)', marginBottom: 4 }}>Sunday 5-a-side ⚽</div>
+                    <div style={{ color: 'var(--accent)', fontSize: 13, fontWeight: 700 }}>RECURRING EVERY WEEK</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>8/10</div>
+                    <div style={{ fontSize: 12, color: 'var(--text)', opacity: 0.5 }}>slots filled</div>
+                  </div>
+                </div>
+                <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 10, overflow: 'hidden' }}>
+                  <div style={{ width: '80%', height: '100%', background: 'var(--accent)' }}></div>
+                </div>
+              </div>
+
+              <button disabled style={{ width: '100%', padding: '14px', borderRadius: 16, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontWeight: 700, opacity: 0.6, cursor: 'not-allowed' }}>
+                Join Sunday Squad
+              </button>
+            </div>
+
+            {/* Background Accent */}
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(255,77,0,0.1) 0%, transparent 70%)', zIndex: 0 }}></div>
+          </div>
+        </div>
+      </section>
 
       {/* Waitlist Section */}
       <section id="waitlist" style={{ padding: '80px 20px', position: 'relative' }}>
@@ -508,19 +580,19 @@ export default function Home() {
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, textAlign: 'left' }}>
               <div style={{ display: 'grid', gap: 6 }}>
                 <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Your Email</label>
-                <input 
-                  type="email" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  placeholder="name@email.com" 
-                  required 
-                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }} 
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="name@email.com"
+                  required
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
                 />
               </div>
 
               <div style={{ display: 'grid', gap: 6 }}>
                 <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Primary Interest</label>
-                <select 
+                <select
                   value={interest}
                   onChange={e => setInterest(e.target.value)}
                   style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16, appearance: 'none' }}
@@ -533,12 +605,12 @@ export default function Home() {
 
               <div style={{ display: 'grid', gap: 6 }}>
                 <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Which area do you live in?</label>
-                <input 
-                  type="text" 
-                  value={neighborhood} 
-                  onChange={e => setNeighborhood(e.target.value)} 
-                  placeholder="e.g. Bandra, South Perth" 
-                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }} 
+                <input
+                  type="text"
+                  value={neighborhood}
+                  onChange={e => setNeighborhood(e.target.value)}
+                  placeholder="e.g. Bandra, South Perth"
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
                 />
               </div>
 
