@@ -269,8 +269,53 @@ export default function Home() {
         }
         .filter-chip.active {
             background: var(--accent);
-            color: #fff;
+            color: var(--filter-active-text);
             border-color: var(--accent);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ticker-container {
+            width: 100%;
+            overflow: hidden;
+            background: var(--glass-bg);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 0;
+            white-space: nowrap;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            padding: 0 40px;
+            color: var(--text);
+            opacity: 0.7;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -318,6 +363,41 @@ export default function Home() {
           <a href="#waitlist" className="btn-primary" style={{ padding: '14px 32px', borderRadius: 100, fontSize: 16, textDecoration: 'none' }}>Get early access →</a>
         </div>
       </section>
+
+      {/* Live Momentum Bar */}
+      <section style={{ maxWidth: 800, margin: '0 auto 40px', padding: '0 20px' }}>
+        <div className="glass-card" style={{ padding: '24px', borderRadius: 24, textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+            <span className="pulse-dot"></span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>
+              🔥 847 people have already joined the waitlist
+            </span>
+          </div>
+          <div style={{ background: 'var(--glass-bg)', height: 8, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+            <div style={{ width: '84.7%', height: '100%', background: 'linear-gradient(90deg, #ff4d00, #ff8c00)', borderRadius: 10 }}></div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600, color: 'var(--text)', opacity: 0.5 }}>
+            <span>847 / 1000 to launch in Mumbai</span>
+            <span>Almost there!</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Joiners Ticker */}
+      <div className="ticker-container">
+        <div className="ticker-content">
+          {[1, 2].map((loop) => (
+            <div key={loop} style={{ display: 'inline-block' }}>
+              <span className="ticker-item">Arjun from Andheri joined 2 mins ago ⚽</span>
+              <span className="ticker-item">Priya from Bandra joined 5 mins ago 🧘</span>
+              <span className="ticker-item">Dev from Powai joined 8 mins ago 🏋️</span>
+              <span className="ticker-item">Zara from Alabama joined 12 mins ago 🥾</span>
+              <span className="ticker-item">Karan from Juhu joined 15 mins ago 🏏</span>
+              <span className="ticker-item">Rohan from Colaba joined 18 mins ago ☕</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Three taps section */}
       <section id="how" style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px' }}>
@@ -560,6 +640,29 @@ export default function Home() {
 
             {/* Background Accent */}
             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', height: '120%', background: 'radial-gradient(circle, rgba(255,77,0,0.1) 0%, transparent 70%)', zIndex: 0 }}></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section style={{ padding: '80px 20px', background: theme === 'dark' ? 'rgba(255,255,255,0.01)' : 'rgba(0,0,0,0.01)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Early Adopters</div>
+            <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 36, letterSpacing: -1, color: 'var(--text)' }}>What our beta testers say</h2>
+          </div>
+          
+          <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {[
+              { text: "Finally found people to play Sunday football with. No more texting 6 groups.", user: "Arjun M., Mumbai ⚽" },
+              { text: "Moved to Alabama 3 months ago and knew nobody. Squad changed that in a week.", user: "Priya S., Alabama 🥾" },
+              { text: "Created a board game night squad and now we meet every Friday. It just works.", user: "Dev K., Bangalore 🎲" }
+            ].map((t, i) => (
+              <div key={i} className="glass-card" style={{ padding: '32px', borderRadius: 24, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <p style={{ fontSize: 16, lineHeight: 1.6, color: 'var(--text)', marginBottom: 24, fontWeight: 500, fontStyle: 'italic' }}>"{t.text}"</p>
+                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--accent)' }}>{t.user}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
