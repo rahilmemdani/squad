@@ -586,7 +586,7 @@ export default function Home() {
             </p>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 40 }}>
-              {["Fill empty slots", "Build regulars", "Zero commission"].map(pill => (
+              {["Fill empty slots", "Build regulars", "No per-booking fees"].map(pill => (
                 <div key={pill} style={{ padding: '8px 16px', borderRadius: 100, background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
                   {pill}
                 </div>
