@@ -42,6 +42,7 @@ export default function Home() {
   const [email, setEmail] = useState('')
   const [interest, setInterest] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
+  const [phone, setPhone] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [activeActivity, setActiveActivity] = useState(0)
@@ -78,7 +79,7 @@ export default function Home() {
       await fetch('https://formspree.io/f/mjgaonyz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, city, interest, neighborhood }),
+        body: JSON.stringify({ email, city, interest, neighborhood, phone }),
       })
       setSubmitted(true)
     } catch {
@@ -713,6 +714,20 @@ export default function Home() {
                   value={neighborhood}
                   onChange={e => setNeighborhood(e.target.value)}
                   placeholder="e.g. Bandra, South Perth"
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gap: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Phone Number</label>
+                  <span style={{ fontSize: 10, opacity: 0.5, fontWeight: 700, color: 'var(--text)' }}>OPTIONAL</span>
+                </div>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
                   style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
                 />
               </div>
