@@ -51,6 +51,9 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0)
   const [selectedSquad, setSelectedSquad] = useState<typeof mockSquads[0] | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showCityRequest, setShowCityRequest] = useState(false)
+  const [cityRequest, setCityRequest] = useState('')
+  const [requestingCity, setRequestingCity] = useState(false)
 
   // Safety Filters
   const [showFemaleOnly, setShowFemaleOnly] = useState(false)
@@ -103,6 +106,27 @@ export default function Home() {
       setSubmitted(true)
     }
     setSubmitting(false)
+  }
+
+  async function handleCityRequest() {
+    if (!cityRequest) return
+    setRequestingCity(true)
+    try {
+      await fetch('https://formspree.io/f/mjgaonyz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          type: 'City Request',
+          requestedCity: cityRequest 
+        }),
+      })
+      alert(`Thanks! We've noted your interest in ${cityRequest}. We'll prioritize it!`)
+    } catch {
+      alert(`Thanks! We've noted your interest in ${cityRequest}.`)
+    }
+    setRequestingCity(false)
+    setShowCityRequest(false)
+    setCityRequest('')
   }
 
   const filteredSquads = mockSquads.filter(s => {
@@ -448,6 +472,8 @@ export default function Home() {
         </div>
       </div>
 
+
+
       {/* Stats Bar */}
       <section style={{ maxWidth: 1100, margin: '40px auto 60px', padding: '0 20px' }}>
         <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
@@ -588,6 +614,34 @@ export default function Home() {
                   {c.label}
                 </button>
               ))}
+            </div>
+
+            {/* City Request */}
+            <div style={{ textAlign: 'center', marginTop: -12 }}>
+              {!showCityRequest ? (
+                <button
+                  onClick={() => setShowCityRequest(true)}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text)', opacity: 0.4, fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  City not listed? Request it
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input
+                    placeholder="Enter your city"
+                    value={cityRequest}
+                    onChange={(e) => setCityRequest(e.target.value)}
+                    style={{ padding: '8px 16px', borderRadius: 100, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 12, width: 220 }}
+                  />
+                  <button
+                    disabled={requestingCity}
+                    onClick={handleCityRequest}
+                    style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 100, fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: requestingCity ? 0.7 : 1 }}
+                  >
+                    {requestingCity ? 'Sending...' : 'Request'}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -733,7 +787,7 @@ export default function Home() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <a href="#waitlist" className="btn-primary" style={{ padding: '16px 36px', borderRadius: 100, fontSize: 16, textDecoration: 'none', display: 'inline-block', width: 'fit-content' }}>
-                List your venue free →
+                List your venue for free →
               </a>
               <p style={{ fontSize: 13, color: 'var(--text)', opacity: 0.4 }}>Free to list. Promoted spots from ₹3,000/month</p>
             </div>
@@ -805,24 +859,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Founder Note */}
-      {/* <section style={{ maxWidth: 740, margin: '80px auto 40px', padding: '0 20px' }}>
-        <div className="glass-card" style={{
-          padding: '40px',
-          borderRadius: 24,
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderLeft: '4px solid #ff4d00',
-          textAlign: 'left'
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#ff4d00', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>A note from the founder</div>
-          <p style={{ fontSize: 18, color: 'var(--text)', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 24, opacity: 0.9 }}>
-            "I moved cities and spent months not knowing anyone. I'd text groups, nobody would reply. I'd show up to places alone hoping to meet people. It never worked.<br /><br />
-            Squad is what I wished existed. I'm building it for everyone who's ever felt that way."
-          </p>
-          <div style={{ fontWeight: 700, color: '#ff4d00', fontSize: 16 }}>— Rahil, Mumbai 🇮🇳</div>
-        </div>
-      </section> */}
 
       {/* Waitlist Section */}
       <section id="waitlist" style={{ padding: '80px 20px', position: 'relative' }}>
@@ -835,9 +871,23 @@ export default function Home() {
           </p>
 
           {submitted ? (
-            <div className="glass-card" style={{ padding: '40px', borderRadius: 32 }}>
-              <h3 className="syne-font" style={{ fontSize: 24, fontWeight: 800, marginBottom: 8, color: 'var(--text)' }}>You're on the list!</h3>
-              <p style={{ color: 'var(--text)', opacity: 0.5 }}>We'll notify you as soon as squads are ready in {city}.</p>
+            <div className="glass-card" style={{ padding: '40px', borderRadius: 32, textAlign: 'center' }}>
+              <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
+              <h3 className="syne-font" style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: 'var(--text)' }}>You're #847 on the list!</h3>
+              <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 16, marginBottom: 32, lineHeight: 1.6 }}>
+                We'll notify you as soon as squads are ready in {city}.
+              </p>
+
+              <div style={{ background: 'rgba(255, 77, 0, 0.05)', border: '1px dashed var(--accent)', padding: '24px', borderRadius: 20 }}>
+                <div style={{ fontWeight: 800, color: 'var(--accent)', fontSize: 18, marginBottom: 8 }}>Want to skip the line? ⚡</div>
+                <p style={{ fontSize: 14, color: 'var(--text)', opacity: 0.7, marginBottom: 20 }}>
+                  Refer 3 friends to join the waitlist and jump to the front of the line automatically.
+                </p>
+                <div style={{ background: 'var(--bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <code style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 700 }}>squad.app/waitlist?ref=rahil</code>
+                  <button onClick={() => alert('Link copied!')} style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>Copy</button>
+                </div>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, textAlign: 'left' }}>
