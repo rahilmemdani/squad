@@ -873,21 +873,51 @@ export default function Home() {
           {submitted ? (
             <div className="glass-card" style={{ padding: '40px', borderRadius: 32, textAlign: 'center' }}>
               <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
-              <h3 className="syne-font" style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: 'var(--text)' }}>You're #847 on the list!</h3>
-              <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 16, marginBottom: 32, lineHeight: 1.6 }}>
-                We'll notify you as soon as squads are ready in {city}.
+              <h3 className="syne-font" style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: 'var(--text)' }}>You're #847</h3>
+              <p style={{ color: 'var(--text)', opacity: 0.7, fontSize: 18, marginBottom: 32, lineHeight: 1.6, fontWeight: 600 }}>
+                Share with 3 friends to jump the queue!
               </p>
-
+              
               <div style={{ background: 'rgba(255, 77, 0, 0.05)', border: '1px dashed var(--accent)', padding: '24px', borderRadius: 20 }}>
-                <div style={{ fontWeight: 800, color: 'var(--accent)', fontSize: 18, marginBottom: 8 }}>Want to skip the line? ⚡</div>
-                <p style={{ fontSize: 14, color: 'var(--text)', opacity: 0.7, marginBottom: 20 }}>
-                  Refer 3 friends to join the waitlist and jump to the front of the line automatically.
-                </p>
-                <div style={{ background: 'var(--bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <code style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 700 }}>squad.app/waitlist?ref=rahil</code>
-                  <button onClick={() => alert('Link copied!')} style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>Copy</button>
+                <div style={{ fontWeight: 800, color: 'var(--accent)', fontSize: 16, marginBottom: 20, textTransform: 'uppercase', letterSpacing: 1 }}>Skip the line ⚡</div>
+                
+                <div style={{ display: 'grid', gap: 12 }}>
+                  <button 
+                    onClick={() => {
+                      const text = encodeURIComponent("Hey! I just joined the waitlist for Squad. It's the easiest way to find people for football, coffee, or hobbies in the city. Join through my link so we can skip the line together: https://squad.app/waitlist?ref=user");
+                      window.open(`https://wa.me/?text=${text}`, '_blank');
+                    }}
+                    style={{ 
+                      background: '#25D366', 
+                      color: '#fff', 
+                      border: 'none', 
+                      padding: '16px', 
+                      borderRadius: 12, 
+                      fontSize: 16, 
+                      fontWeight: 800, 
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 10,
+                      boxShadow: '0 4px 12px rgba(37, 211, 102, 0.2)'
+                    }}
+                  >
+                    <span>📲</span> Share on WhatsApp
+                  </button>
+
+                  <div style={{ background: 'var(--bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <code style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, opacity: 0.8 }}>squad.app/waitlist?ref=user</code>
+                    <button onClick={() => {
+                      navigator.clipboard.writeText("https://squad.app/waitlist?ref=user");
+                      alert('Link copied!');
+                    }} style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>Copy</button>
+                  </div>
                 </div>
               </div>
+              <p style={{ marginTop: 24, fontSize: 13, color: 'var(--text)', opacity: 0.4 }}>
+                We'll notify you as soon as squads are ready in {city}.
+              </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, textAlign: 'left' }}>
