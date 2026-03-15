@@ -139,7 +139,7 @@ export default function Home() {
         }
 
         .dark {
-            --bg: #030303;
+            --bg: #08080a;
             --text: #ffffff;
             --glass-bg: rgba(255, 255, 255, 0.02);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -380,6 +380,22 @@ export default function Home() {
         <div className="animate-up delay-3">
           <a href="#waitlist" className="btn-primary" style={{ padding: '14px 32px', borderRadius: 100, fontSize: 16, textDecoration: 'none' }}>Get early access →</a>
         </div>
+
+        {/* Positioning Line */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+          <div style={{
+            padding: '8px 24px',
+            background: 'rgba(255,255,255,0.06)',
+            borderRadius: 100,
+            border: '1px solid rgba(255,255,255,0.1)',
+            fontSize: 14,
+            color: 'rgba(255,255,255,0.5)',
+            fontWeight: 500,
+            textAlign: 'center'
+          }}>
+            Not a dating app. Not a networking app. Just real people doing real things together.
+          </div>
+        </div>
       </section>
 
       {/* Live Momentum Bar */}
@@ -410,7 +426,7 @@ export default function Home() {
                 submissions.map((sub, idx) => {
                   const firstName = sub.name.split(' ')[0]
                   const emoji = activities.find(a => a.name.toLowerCase() === sub.interest.toLowerCase())?.emoji || '⚽'
-                  
+
                   return (
                     <span key={`${loop}-${sub.id || idx}`} className="ticker-item">
                       {firstName} from {sub.neighborhood} joined {emoji}
@@ -431,6 +447,58 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* Stats Bar */}
+      <section style={{ maxWidth: 1100, margin: '40px auto 60px', padding: '0 20px' }}>
+        <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          {[
+            { stat: '4 in 5', label: 'people feel lonely when they move to a new city' },
+            { stat: '3 weeks', label: 'Average WhatsApp group dies in 3 weeks' },
+            { stat: '< 10 mins', label: 'Squad users find their first squad in under 10 minutes' },
+          ].map((item, i) => (
+            <div key={i} className="glass-card" style={{ padding: '24px', borderRadius: 20, textAlign: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: '#ff4d00', marginBottom: 8, fontFamily: 'Syne, sans-serif' }}>{item.stat}</div>
+              <div style={{ fontSize: 13, color: 'var(--text)', opacity: 0.6, lineHeight: 1.4 }}>{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Safety First Pillar */}
+      <section style={{ padding: '60px 20px', borderBottom: '1px solid var(--glass-border)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#10b981', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Safety First</div>
+          <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 44, letterSpacing: -1.5, marginBottom: 12, color: 'var(--text)' }}>
+            We verify the humans,<br />so you can focus on the hobby.
+          </h2>
+          <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 18, marginBottom: 48 }}>Trust is the foundation of every great squad.</p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              { icon: '🆔', title: 'ID Verified Hosts', desc: 'Every host undergoes a strict identity check before creating their first squad.' },
+              { icon: '👩‍🦰', title: 'Female-Only Spaces', desc: 'Secure, verified spaces for women to connect and play without hesitation.' },
+              { icon: '🛡️', title: 'Zero-Tolerance', desc: 'Strict guidelines and instant moderation for flaking, creeping, or bad vibes.' },
+            ].map((item, i) => (
+              <div key={i} className="glass-card" style={{
+                padding: '24px 32px',
+                borderRadius: 24,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 24,
+                textAlign: 'left'
+              }}>
+                <div style={{ fontSize: 40, width: 80, height: 80, background: 'rgba(255,255,255,0.03)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {item.icon}
+                </div>
+                <div>
+                  <h3 className="syne-font" style={{ fontSize: 20, fontWeight: 800, marginBottom: 6, color: 'var(--text)' }}>{item.title}</h3>
+                  <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 15, lineHeight: 1.6 }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Three taps section */}
       <section id="how" style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px' }}>
@@ -455,6 +523,43 @@ export default function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Anti-Ghosting Section */}
+      <section style={{ maxWidth: 1000, margin: '40px auto 100px', padding: '0 20px' }}>
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(255, 77, 0, 0.05) 0%, rgba(255, 77, 0, 0.02) 100%)',
+          border: '1px solid rgba(255, 77, 0, 0.2)',
+          borderRadius: 32,
+          padding: '60px 40px',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Subtle Accent Background */}
+          <div style={{ position: 'absolute', top: '-50%', left: '-20%', width: '140%', height: '200%', background: 'radial-gradient(circle, rgba(255,77,0,0.05) 0%, transparent 60%)', zIndex: 0 }}></div>
+
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>The Anti-Ghosting Feature</div>
+            <h2 className="syne-font" style={{ fontWeight: 800, fontSize: 44, letterSpacing: -1.5, marginBottom: 24, color: 'var(--text)' }}>No more "Maybe".</h2>
+            <p style={{ color: 'var(--text)', opacity: 0.7, fontSize: 19, maxWidth: 650, margin: '0 auto 40px', lineHeight: 1.7 }}>
+              The biggest problem with WhatsApp groups is that people flake. When you join a Squad, you're in. We handle the reminders and the roster so you just show up.
+            </p>
+
+            <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+              {[
+                { label: 'Verified Rosters', icon: '📝' },
+                { label: 'Auto-Reminders', icon: '🔔' },
+                { label: 'Flake Protection', icon: '🚫' },
+              ].map((pill, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--bg)', border: '1px solid var(--glass-border)', padding: '12px 20px', borderRadius: 100, fontSize: 15, fontWeight: 600 }}>
+                  <span>{pill.icon}</span>
+                  <span>{pill.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -684,7 +789,7 @@ export default function Home() {
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>Early Adopters</div>
             <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 36, letterSpacing: -1, color: 'var(--text)' }}>What our beta testers say</h2>
           </div>
-          
+
           <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {[
               { text: "Finally found people to play Sunday football with. No more texting 6 groups.", user: "Arjun M., Mumbai ⚽" },
@@ -699,6 +804,25 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Founder Note */}
+      {/* <section style={{ maxWidth: 740, margin: '80px auto 40px', padding: '0 20px' }}>
+        <div className="glass-card" style={{
+          padding: '40px',
+          borderRadius: 24,
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderLeft: '4px solid #ff4d00',
+          textAlign: 'left'
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#ff4d00', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 20 }}>A note from the founder</div>
+          <p style={{ fontSize: 18, color: 'var(--text)', lineHeight: 1.7, fontStyle: 'italic', marginBottom: 24, opacity: 0.9 }}>
+            "I moved cities and spent months not knowing anyone. I'd text groups, nobody would reply. I'd show up to places alone hoping to meet people. It never worked.<br /><br />
+            Squad is what I wished existed. I'm building it for everyone who's ever felt that way."
+          </p>
+          <div style={{ fontWeight: 700, color: '#ff4d00', fontSize: 16 }}>— Rahil, Mumbai 🇮🇳</div>
+        </div>
+      </section> */}
 
       {/* Waitlist Section */}
       <section id="waitlist" style={{ padding: '80px 20px', position: 'relative' }}>
