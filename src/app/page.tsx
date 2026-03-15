@@ -410,23 +410,21 @@ export default function Home() {
                 submissions.map((sub, idx) => {
                   const firstName = sub.name.split(' ')[0]
                   const emoji = activities.find(a => a.name.toLowerCase() === sub.interest.toLowerCase())?.emoji || '⚽'
-                  const timeAgo = Math.max(1, Math.floor((new Date().getTime() - new Date(sub.joinedAt).getTime()) / 60000))
-                  const timeText = timeAgo < 60 ? `${timeAgo} mins ago` : `${Math.floor(timeAgo / 60)} hours ago`
                   
                   return (
                     <span key={`${loop}-${sub.id || idx}`} className="ticker-item">
-                      {firstName} from {sub.neighborhood} joined {timeText} {emoji}
+                      {firstName} from {sub.neighborhood} joined {emoji}
                     </span>
                   )
                 })
               ) : (
                 <>
-                  <span className="ticker-item">Arjun from Andheri joined 2 mins ago ⚽</span>
-                  <span className="ticker-item">Priya from Bandra joined 5 mins ago 🧘</span>
-                  <span className="ticker-item">Dev from Powai joined 8 mins ago 🏋️</span>
-                  <span className="ticker-item">Zara from Alabama joined 12 mins ago 🥾</span>
-                  <span className="ticker-item">Karan from Juhu joined 15 mins ago 🏏</span>
-                  <span className="ticker-item">Rohan from Colaba joined 18 mins ago ☕</span>
+                  <span className="ticker-item">Arjun from Andheri joined ⚽</span>
+                  <span className="ticker-item">Priya from Bandra joined 🧘</span>
+                  <span className="ticker-item">Dev from Powai joined 🏋️</span>
+                  <span className="ticker-item">Zara from Alabama joined 🥾</span>
+                  <span className="ticker-item">Karan from Juhu joined 🏏</span>
+                  <span className="ticker-item">Rohan from Colaba joined ☕</span>
                 </>
               )}
             </div>
