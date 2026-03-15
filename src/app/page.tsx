@@ -60,6 +60,10 @@ export default function Home() {
   const [showVerifiedOnly, setShowVerifiedOnly] = useState(false)
 
   const [submissions, setSubmissions] = useState<any[]>([])
+  const [globalSimulatedCount, setGlobalSimulatedCount] = useState(0)
+  const baseCount = 848 // Anchored at 848 as requested
+  const totalWaitlistCount = baseCount + (submissions?.length || 0) + globalSimulatedCount
+  const [userRank, setUserRank] = useState<number | null>(null)
 
   useEffect(() => {
     async function fetchSubmissions() {
@@ -91,6 +95,36 @@ export default function Home() {
     document.documentElement.className = theme;
   }, [theme])
 
+  // Global Consistent Growth Simulation
+  useEffect(() => {
+    const LAUNCH_DATE = new Date('2026-03-15T00:00:00Z').getTime();
+    const calculateGrowth = () => {
+      const elapsedMs = Date.now() - LAUNCH_DATE;
+      // Simulated growth: 1 person every 45 mins (2700000 ms)
+      return Math.floor(elapsedMs / 2700000);
+    };
+
+    setGlobalSimulatedCount(calculateGrowth());
+
+    const interval = setInterval(() => {
+      setGlobalSimulatedCount(calculateGrowth());
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [])
+
+  // Persistent Unique Rank for User
+  useEffect(() => {
+    const savedRank = localStorage.getItem('squad_user_rank');
+    if (savedRank) {
+      setUserRank(parseInt(savedRank));
+    } else {
+      const newRank = totalWaitlistCount + Math.floor(Math.random() * 2) + 1;
+      localStorage.setItem('squad_user_rank', newRank.toString());
+      setUserRank(newRank);
+    }
+  }, [totalWaitlistCount])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email) return
@@ -115,9 +149,9 @@ export default function Home() {
       await fetch('https://formspree.io/f/mjgaonyz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           type: 'City Request',
-          requestedCity: cityRequest 
+          requestedCity: cityRequest
         }),
       })
       alert(`Thanks! We've noted your interest in ${cityRequest}. We'll prioritize it!`)
@@ -428,15 +462,15 @@ export default function Home() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <span className="pulse-dot"></span>
             <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>
-              🔥 847 people have already joined the waitlist
+              🔥 {totalWaitlistCount} people have already joined the waitlist
             </span>
           </div>
           <div style={{ background: 'var(--glass-bg)', height: 8, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
-            <div style={{ width: '84.7%', height: '100%', background: 'linear-gradient(90deg, #ff4d00, #ff8c00)', borderRadius: 10 }}></div>
+            <div style={{ width: `${Math.min((totalWaitlistCount / 5000) * 100, 100)}%`, height: '100%', background: 'linear-gradient(90deg, #ff4d00, #ff8c00)', borderRadius: 10 }}></div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600, color: 'var(--text)', opacity: 0.5 }}>
-            <span>847 / 1000 to launch in Mumbai</span>
-            <span>Almost there!</span>
+            <span>{totalWaitlistCount} / 5000 to launch in Mumbai</span>
+            <span>{5000 - totalWaitlistCount} spots left!</span>
           </div>
         </div>
       </section>
@@ -873,28 +907,30 @@ export default function Home() {
           {submitted ? (
             <div className="glass-card" style={{ padding: '40px', borderRadius: 32, textAlign: 'center' }}>
               <div style={{ fontSize: 44, marginBottom: 16 }}>🎉</div>
-              <h3 className="syne-font" style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: 'var(--text)' }}>You're #847</h3>
+              <h3 className="syne-font" style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, color: 'var(--text)' }}>You're #{userRank || (totalWaitlistCount + 1)}</h3>
               <p style={{ color: 'var(--text)', opacity: 0.7, fontSize: 18, marginBottom: 32, lineHeight: 1.6, fontWeight: 600 }}>
                 Share with 3 friends to jump the queue!
               </p>
-              
+
               <div style={{ background: 'rgba(255, 77, 0, 0.05)', border: '1px dashed var(--accent)', padding: '24px', borderRadius: 20 }}>
                 <div style={{ fontWeight: 800, color: 'var(--accent)', fontSize: 16, marginBottom: 20, textTransform: 'uppercase', letterSpacing: 1 }}>Skip the line ⚡</div>
-                
+
                 <div style={{ display: 'grid', gap: 12 }}>
-                  <button 
+                  <button
                     onClick={() => {
-                      const text = encodeURIComponent("Hey! I just joined the waitlist for Squad. It's the easiest way to find people for football, coffee, or hobbies in the city. Join through my link so we can skip the line together: https://squad.app/waitlist?ref=user");
+                      const shareName = name.split(' ')[0] || 'friend';
+                      const shareUrl = `https://join-squad.vercel.app/?ref=${shareName.toLowerCase()}`;
+                      const text = encodeURIComponent(`Hey! I just joined the waitlist for Squad. It's the easiest way to find people for football, coffee, or hobbies in the city. Join through my link so we can skip the line together: ${shareUrl}`);
                       window.open(`https://wa.me/?text=${text}`, '_blank');
                     }}
-                    style={{ 
-                      background: '#25D366', 
-                      color: '#fff', 
-                      border: 'none', 
-                      padding: '16px', 
-                      borderRadius: 12, 
-                      fontSize: 16, 
-                      fontWeight: 800, 
+                    style={{
+                      background: '#25D366',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '16px',
+                      borderRadius: 12,
+                      fontSize: 16,
+                      fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -907,9 +943,11 @@ export default function Home() {
                   </button>
 
                   <div style={{ background: 'var(--bg)', border: '1px solid var(--glass-border)', padding: '12px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <code style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, opacity: 0.8 }}>squad.app/waitlist?ref=user</code>
+                    <code style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, opacity: 0.8 }}>join-squad.vercel.app/?ref={name.split(' ')[0]?.toLowerCase() || 'user'}</code>
                     <button onClick={() => {
-                      navigator.clipboard.writeText("https://squad.app/waitlist?ref=user");
+                      const shareName = name.split(' ')[0] || 'user';
+                      const shareUrl = `https://join-squad.vercel.app/?ref=${shareName.toLowerCase()}`;
+                      navigator.clipboard.writeText(shareUrl);
                       alert('Link copied!');
                     }} style={{ background: 'var(--accent)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>Copy</button>
                   </div>
