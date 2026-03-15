@@ -39,7 +39,9 @@ const mockSquads = [
 export default function Home() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [city, setCity] = useState<City>('mumbai')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [feedback, setFeedback] = useState('')
   const [interest, setInterest] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
   const [phone, setPhone] = useState('')
@@ -53,6 +55,21 @@ export default function Home() {
   // Safety Filters
   const [showFemaleOnly, setShowFemaleOnly] = useState(false)
   const [showVerifiedOnly, setShowVerifiedOnly] = useState(false)
+
+  const [submissions, setSubmissions] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchSubmissions() {
+      try {
+        const res = await fetch('/api/submissions')
+        const data = await res.json()
+        if (data.submissions) setSubmissions(data.submissions)
+      } catch (err) {
+        console.error('Failed to fetch submissions', err)
+      }
+    }
+    fetchSubmissions()
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -79,7 +96,7 @@ export default function Home() {
       await fetch('https://formspree.io/f/mjgaonyz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, city, interest, neighborhood, phone }),
+        body: JSON.stringify({ name, email, city, interest, neighborhood, phone, feedback }),
       })
       setSubmitted(true)
     } catch {
@@ -389,12 +406,29 @@ export default function Home() {
         <div className="ticker-content">
           {[1, 2].map((loop) => (
             <div key={loop} style={{ display: 'inline-block' }}>
-              <span className="ticker-item">Arjun from Andheri joined 2 mins ago ⚽</span>
-              <span className="ticker-item">Priya from Bandra joined 5 mins ago 🧘</span>
-              <span className="ticker-item">Dev from Powai joined 8 mins ago 🏋️</span>
-              <span className="ticker-item">Zara from Alabama joined 12 mins ago 🥾</span>
-              <span className="ticker-item">Karan from Juhu joined 15 mins ago 🏏</span>
-              <span className="ticker-item">Rohan from Colaba joined 18 mins ago ☕</span>
+              {submissions.length > 0 ? (
+                submissions.map((sub, idx) => {
+                  const firstName = sub.name.split(' ')[0]
+                  const emoji = activities.find(a => a.name.toLowerCase() === sub.interest.toLowerCase())?.emoji || '⚽'
+                  const timeAgo = Math.max(1, Math.floor((new Date().getTime() - new Date(sub.joinedAt).getTime()) / 60000))
+                  const timeText = timeAgo < 60 ? `${timeAgo} mins ago` : `${Math.floor(timeAgo / 60)} hours ago`
+                  
+                  return (
+                    <span key={`${loop}-${sub.id || idx}`} className="ticker-item">
+                      {firstName} from {sub.neighborhood} joined {timeText} {emoji}
+                    </span>
+                  )
+                })
+              ) : (
+                <>
+                  <span className="ticker-item">Arjun from Andheri joined 2 mins ago ⚽</span>
+                  <span className="ticker-item">Priya from Bandra joined 5 mins ago 🧘</span>
+                  <span className="ticker-item">Dev from Powai joined 8 mins ago 🏋️</span>
+                  <span className="ticker-item">Zara from Alabama joined 12 mins ago 🥾</span>
+                  <span className="ticker-item">Karan from Juhu joined 15 mins ago 🏏</span>
+                  <span className="ticker-item">Rohan from Colaba joined 18 mins ago ☕</span>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -673,7 +707,10 @@ export default function Home() {
         <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 20 }}>🚀</div>
           <h2 className="syne-font h2-title" style={{ fontWeight: 800, fontSize: 48, letterSpacing: -1.5, marginBottom: 16, color: 'var(--text)' }}>The Waitlist</h2>
-          <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 18, marginBottom: 40, lineHeight: 1.6 }}>Step 1 is simple: we're collecting emails. We launch officially when we hit 1,000 members in your city.</p>
+          <p style={{ color: 'var(--text)', opacity: 0.5, fontSize: 18, marginBottom: 40, lineHeight: 1.6 }}>
+            Step 1 is simple: we're collecting emails. We launch officially when we hit 1,000 members in your city.<br />
+            <span style={{ color: 'var(--accent)', fontWeight: 700 }}>Tell us what gaps in your social life you want Squad to fill below.</span>
+          </p>
 
           {submitted ? (
             <div className="glass-card" style={{ padding: '40px', borderRadius: 32 }}>
@@ -682,6 +719,18 @@ export default function Home() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, textAlign: 'left' }}>
+              <div style={{ display: 'grid', gap: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Full Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Arjun Sharma"
+                  required
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
+                />
+              </div>
+
               <div style={{ display: 'grid', gap: 6 }}>
                 <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Your Email</label>
                 <input
@@ -729,6 +778,17 @@ export default function Home() {
                   onChange={e => setPhone(e.target.value)}
                   placeholder="+91 98765 43210"
                   style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16 }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gap: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1 }}>Your input: What's missing in your social life? (or add-ons you'd love)</label>
+                <textarea
+                  value={feedback}
+                  onChange={e => setFeedback(e.target.value)}
+                  placeholder="e.g. Too many dead groups, need a way to filter by skill level..."
+                  rows={3}
+                  style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--input-bg)', border: '1px solid var(--glass-border)', color: 'var(--text)', fontSize: 16, resize: 'none', fontFamily: 'inherit', lineHeight: 1.5 }}
                 />
               </div>
 
