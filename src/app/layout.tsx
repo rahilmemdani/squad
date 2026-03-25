@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Squad",
   description: "Squad is a social platform for finding and joining groups of people who share your interests.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
